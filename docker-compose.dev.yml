@@ -1,0 +1,86 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres-dev
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: appdb
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  api-service:
+    build:
+      context: ./api-service
+      dockerfile: Dockerfile
+      target: build
+    container_name: api-dev
+    environment:
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: appdb
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      NODE_ENV: development
+    volumes:
+      - ./api-service:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+    depends_on:
+      - postgres
+    command: npm run dev
+
+  worker-service:
+    build:
+      context: ./worker-service
+      dockerfile: Dockerfile
+      target: builder
+    container_name: worker-dev
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: appdb
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    volumes:
+      - ./worker-service:/app
+    networks:
+      - app-network
+    depends_on:
+      - postgres
+    command: python -u worker.py
+
+  frontend-service:
+    build:
+      context: ./frontend-service
+      dockerfile: Dockerfile
+      target: build
+    container_name: frontend-dev
+    environment:
+      REACT_APP_API_URL: http://localhost:3000
+    volumes:
+      - ./frontend-service:/app
+      - /app/node_modules
+    ports:
+      - "3001:3000"
+    networks:
+      - app-network
+    depends_on:
+      - api-service
+    command: npm start
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
