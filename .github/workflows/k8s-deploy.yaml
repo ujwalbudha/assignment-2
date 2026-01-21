@@ -10,8 +10,6 @@ on:
         type: choice
         options:
           - app
-          - staging
-          - production
 
 jobs:
   deploy:
