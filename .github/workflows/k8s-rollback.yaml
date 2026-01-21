@@ -1,0 +1,33 @@
+name: Rollback Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      service:
+        description: 'Service to rollback'
+        required: true
+        type: choice
+        options:
+          - api-service
+          - frontend-service
+          - worker-service
+
+jobs:
+  rollback:
+    runs-on: self-hosted
+    steps:
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo '${{ secrets.KUBECONFIG }}' | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: Rollback
+        run: |
+          kubectl rollout undo deployment/${{ inputs.service }} -n app
+          kubectl rollout status deployment/${{ inputs.service }} -n app --timeout=300s
+
+
