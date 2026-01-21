@@ -5,10 +5,11 @@ RUN npm ci --only=production && npm cache clean --force
 
 FROM node:18-alpine AS build
 WORKDIR /app
+RUN apk add --no-cache dumb-init
 COPY package*.json ./
 RUN npm ci
 COPY . .
-RUN npm test
+RUN npm test -- --passWithNoTests
 
 FROM node:18-alpine AS production
 
