@@ -36,6 +36,3 @@ jobs:
           kubectl rollout status deployment/api-service -n ${{ inputs.environment }} --timeout=300s
           kubectl rollout status deployment/frontend-service -n ${{ inputs.environment }} --timeout=300s
           kubectl rollout status deployment/worker-service -n ${{ inputs.environment }} --timeout=300s
-
-      - name: Verify deployment
-        run: kubectl get pods -n ${{ inputs.environment }}
