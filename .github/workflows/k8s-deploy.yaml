@@ -23,10 +23,12 @@ jobs:
       - name: Configure kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
+          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
           chmod 600 $HOME/.kube/config
 
-      - name: Deploy to Kubernetes
+      - name: Deploy to Kuberneteshho "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+          chmod 600o "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+          chmod 600
         run: kubectl apply -k k8s/
 
       - name: Wait for rollout
