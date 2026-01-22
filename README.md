@@ -149,22 +149,27 @@ Push to main
      ▼
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │ Build Images    │───▶│ Push to Docker  │───▶│ Trivy Scan      │
-│ (parallel)      │    │ Hub (SHA+latest)│    │                 │
+│ (parallel)      │    │ Hub             │    │ (non-blocking)  │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
+        │
+        │ 
+        ▼
 
 Manual Trigger (k8s-deploy)
      │
      ▼
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │ Self-hosted     │───▶│ kubectl apply   │───▶│ Wait for        │
-│ Runner          │    │ -k k8s/         │    │ rollout         │
+│ Runner          │    │ -k k8s/         │    │ rollout (5min)  │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
-                                                     │
-                                              (on failure)
-                                                     ▼
-                                              ┌─────────────────┐
-                                              │ Auto Rollback   │
-                                              └─────────────────┘
+
+Manual Trigger (k8s-rollback)
+     │
+     ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│ Select Service  │───▶│ kubectl rollout │───▶│ Wait for        │
+│ (dropdown)      │    │ undo            │    │ rollout (5min)  │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
 ![Matrix Build Pipeline](evidences/matrix-pipeline-build.png)
