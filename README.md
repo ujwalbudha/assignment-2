@@ -239,6 +239,6 @@ kubectl apply -k k8s/
 
 ## Intentional tradeoffs
 
-- for this assignment i have opt not to choose image tagging strategy and only used latest tag this will be implemented in the other assignment 
+- for this assignment i have opt not to choose image tagging strategy and only used latest tag 
 - No branching strategy only main branch used (assignment purpose only)
 
